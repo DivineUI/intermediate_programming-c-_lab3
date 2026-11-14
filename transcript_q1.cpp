@@ -53,12 +53,46 @@ private:
     string name;
     Date admissionDate;
     CourseRecord courses[10];
+    int numCourses;
+    static int count;
+
+public:
+    Student(const string &ID, const string &name, const Date &admitted)
+        : ID(ID), name(name), admissionDate(admitted), numCourses(0)
+    {
+        count++;
+    }
+
+    string getID() const
+    {
+        return ID;
+    }
+    string getName() const
+    {
+        return name;
+    }
+    Date getAdmissionDate() const
+    {
+        return admissionDate;
+    }
+    int getNumCourses() const
+    {
+        return numCourses;
+    }
+    static int getCount()
+    {
+        return count;
+    }
 };
+
+int Student::count = 0; // Initialize number of students to 0
 
 int main()
 {
-    cout << lookupGrade(84).letter << endl;
-    cout << lookupGrade(75).letter << endl;
-    cout << lookupGrade(47).letter << endl;
+    Student s1("68352028", "Efua Owusu", {12, 8, 2024});
+    Student s2("61242027", "Ama Mensah", {12, 8, 2024});
+
+    cout << s1.getName() << " " << s1.getID() << endl;
+    cout << "Students: " << Student::getCount() << endl;
     return 0;
 }
