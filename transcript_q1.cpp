@@ -125,6 +125,32 @@ public:
         }
         return totalCredits;
     }
+    // Printing the transcript
+    void printTranscript() const
+    {
+        double gpa = calculateGPA();
+        cout << "Name: " << name << " ID: " << ID << " Admitted: "
+             << setfill('0') << setw(2) << admissionDate.day << "/"
+             << setw(2) << admissionDate.month << "/"
+             << admissionDate.year << setfill(' ') << endl;
+        cout << left << fixed << setprecision(1);
+        cout << setw(10) << "Course" << setw(9) << "Credits"
+             << setw(7) << "Score" << setw(7) << "Grade" << "Points" << endl;
+
+        for (int i = 0; i < numCourses; i++)
+        {
+            GradeBand g = lookupGrade(courses[i].score);
+            cout << setw(10) << courses[i].code
+                 << setw(9) << courses[i].credits
+                 << setw(7) << courses[i].score
+                 << setw(7) << g.letter
+                 << setprecision(2) << g.points << setprecision(1) << endl;
+        }
+        cout << "GPA: " << setprecision(2) << gpa
+             << " Credits earned: " << setprecision(1) << creditsEarned()
+             << " Standing: " << (gpa < 2.00 ? "Academic Probation" : "Good Standing")
+             << endl;
+    }
 };
 
 int Student::count = 0; // Initialize number of students to 0
