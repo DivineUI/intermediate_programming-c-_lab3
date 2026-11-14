@@ -154,3 +154,52 @@ public:
 };
 
 int Student::count = 0; // Initialize number of students to 0
+
+// Main function
+int main()
+{
+    string id;
+
+    while (true)
+    {
+        getline(cin, id);
+        if (id == "0")
+        {
+            break;
+        }
+
+        string name;
+        getline(cin, name);
+
+        string dateLine;
+        getline(cin, dateLine);
+        Date d;
+        stringstream ss(dateLine);
+        ss >> d.day >> d.month >> d.year;
+
+        Student s(id, name, d);
+
+        // Read courses until END, skipping invalid scores
+        string line;
+        while (getline(cin, line) && line != "END")
+        {
+            stringstream cs(line);
+            CourseRecord c;
+            cs >> c.code >> c.credits >> c.score;
+
+            if (c.score < 0 || c.score > 100)
+            {
+                cout << "Invalid score " << c.score << " for "
+                     << c.code << "; course skipped" << endl;
+                continue;
+            }
+
+            s.addCourse(c);
+        }
+
+        s.printTranscript();
+    }
+
+    cout << "Students processed: " << Student::getCount() << endl;
+    return 0;
+}
