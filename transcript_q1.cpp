@@ -57,12 +57,14 @@ private:
     static int count;
 
 public:
-    Student(const string &ID, const string &name, const Date &admitted)
+    // Initializing data members
+    Student(string &ID, string &name, Date &admitted)
         : ID(ID), name(name), admissionDate(admitted), numCourses(0)
     {
         count++;
     }
 
+    // Getters
     string getID() const
     {
         return ID;
@@ -83,16 +85,46 @@ public:
     {
         return count;
     }
+    // Function to add a course
+    void addCourse(CourseRecord &c)
+    {
+        if (numCourses < 10)
+        {
+            courses[numCourses] = c;
+            numCourses++;
+        }
+    }
+    // Function to calculate GPA
+    double calculateGPA() const
+    {
+        double totalPoints = 0;
+        double totalCredits = 0;
+        for (int i = 0; i < numCourses; i++)
+        {
+            GradeBand g = lookupGrade(courses[i].score);
+            totalPoints += g.points * courses[i].credits;
+            totalCredits += courses[i].credits;
+        }
+        if (totalCredits == 0)
+        {
+            return 0;
+        }
+        double gpa = totalPoints / totalCredits;
+        return gpa;
+    }
+    // Function to count credits earned
+    double creditsEarned() const
+    {
+        double totalCredits = 0;
+        for (int i = 0; i < numCourses; i++)
+        {
+            if (courses[i].score >= 50)
+            {
+                totalCredits += courses[i].credits;
+            }
+        }
+        return totalCredits;
+    }
 };
 
 int Student::count = 0; // Initialize number of students to 0
-
-int main()
-{
-    Student s1("68352028", "Efua Owusu", {12, 8, 2024});
-    Student s2("61242027", "Ama Mensah", {12, 8, 2024});
-
-    cout << s1.getName() << " " << s1.getID() << endl;
-    cout << "Students: " << Student::getCount() << endl;
-    return 0;
-}
