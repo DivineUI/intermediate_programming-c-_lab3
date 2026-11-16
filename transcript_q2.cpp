@@ -125,6 +125,24 @@ public:
         return total;
     }
 
+    // Prints only the courses for which keep() returns true
+    void printWhere(bool (*keep)(const CourseRecord &)) const
+    {
+        cout << left << fixed << setprecision(1);
+        for (int i = 0; i < size; i++)
+        {
+            if (keep(courses[i]))
+            {
+                GradeBand g = lookupGrade(courses[i].score);
+                cout << setw(10) << courses[i].code
+                     << setw(9) << courses[i].credits
+                     << setw(7) << courses[i].score
+                     << setw(7) << g.letter
+                     << setprecision(2) << g.points << setprecision(1) << endl;
+            }
+        }
+    }
+
     friend ostream &operator<<(ostream &, const Transcript &t);
 };
 
@@ -164,6 +182,29 @@ public:
     {
     }
 
+    string getName() const
+    {
+        return name;
+    }
+
+    const Transcript &getTranscript() const
+    {
+        return transcript;
+    }
+
+    // Uses += and returns *this so calls can be chained
+    Student &addCourse(const CourseRecord &c)
+    {
+        transcript += c;
+        return *this;
+    }
+
+    // Compares GPAs
+    bool operator<(const Student &other) const
+    {
+        return transcript.calculateGPA() < other.transcript.calculateGPA();
+    }
+
     void printHeader() const
     {
         cout << "Name: " << name << " ID: " << ID << " Admitted: "
@@ -187,6 +228,32 @@ public:
     {
     }
 
+    int getLevel() const
+    {
+        return level;
+    }
+
+    // ++a : raise level by 100 (max 400), return the student
+    UndergraduateStudent &operator++()
+    {
+        if (level < 400)
+        {
+            level += 100;
+        }
+        return *this;
+    }
+
+    // a++ : same, but return the old level as an int
+    int operator++(int)
+    {
+        int old = level;
+        if (level < 400)
+        {
+            level += 100;
+        }
+        return old;
+    }
+
     void printHeader() const
     {
         Student::printHeader();
@@ -194,16 +261,48 @@ public:
     }
 };
 
+bool isFailing(const CourseRecord &c)
+{
+    return c.score < 50;
+}
+
 int main()
 {
     UndergraduateStudent ama("61242027", "Ama Serwaa Mensah", {12, 8, 2024},
                              "Computer Science", 200);
-    ama.printHeader();
+    UndergraduateStudent kwame("75112027", "Kwame Boateng", {14, 8, 2023},
+                               "Business Administration", 300);
 
-    Transcript t;
-    t += {"CS313", 1.0, 84};
-    t += {"MATH221", 1.0, 72};
-    t += {"CS341", 1.0, 47};
-    cout << t << endl;
+    // chained addCourse calls
+    ama.addCourse({"CS313", 1.0, 84})
+        .addCourse({"MATH221", 1.0, 72})
+        .addCourse({"CS341", 1.0, 47});
+    kwame.addCourse({"ECON101", 1.0, 63})
+        .addCourse({"BUSA221", 1.0, 58});
+
+    ama.printHeader();
+    cout << ama.getTranscript() << endl;
+
+    kwame.printHeader();
+    cout << kwame.getTranscript() << endl;
+
+    if (kwame < ama)
+    {
+        cout << "Higher GPA: " << ama.getName() << endl;
+    }
+    else
+    {
+        cout << "Higher GPA: " << kwame.getName() << endl;
+    }
+
+    cout << "Ama's failed courses:" << endl;
+    ama.getTranscript().printWhere(isFailing);
+
+    ++ama;
+    cout << "After ++ama, level is " << ama.getLevel() << endl;
+
+    int old = ama++;
+    cout << "ama++ returned " << old << "; level is now " << ama.getLevel() << endl;
+
     return 0;
 }
