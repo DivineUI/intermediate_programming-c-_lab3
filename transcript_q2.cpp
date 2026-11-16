@@ -87,7 +87,67 @@ public:
         courses[size] = c;
         size++;
     }
+
+    // += adds a course and returns the transcript itself
+    Transcript &operator+=(const CourseRecord &c)
+    {
+        addCourse(c);
+        return *this;
+    }
+
+    double calculateGPA() const
+    {
+        double totalPoints = 0;
+        double totalCredits = 0;
+        for (int i = 0; i < size; i++)
+        {
+            GradeBand g = lookupGrade(courses[i].score);
+            totalPoints += g.points * courses[i].credits;
+            totalCredits += courses[i].credits;
+        }
+        if (totalCredits == 0)
+        {
+            return 0;
+        }
+        return totalPoints / totalCredits;
+    }
+
+    double creditsEarned() const
+    {
+        double total = 0;
+        for (int i = 0; i < size; i++)
+        {
+            if (courses[i].score >= 50)
+            {
+                total += courses[i].credits;
+            }
+        }
+        return total;
+    }
+
+    friend ostream &operator<<(ostream &, const Transcript &t);
 };
+
+// Friend function: defined outside the class, no Transcript:: in front
+ostream &operator<<(ostream &out, const Transcript &t)
+{
+    out << left << fixed << setprecision(1);
+    out << setw(10) << "Course" << setw(9) << "Credits"
+        << setw(7) << "Score" << setw(7) << "Grade" << "Points" << endl;
+
+    for (int i = 0; i < t.size; i++)
+    {
+        GradeBand g = lookupGrade(t.courses[i].score);
+        out << setw(10) << t.courses[i].code
+            << setw(9) << t.courses[i].credits
+            << setw(7) << t.courses[i].score
+            << setw(7) << g.letter
+            << setprecision(2) << g.points << setprecision(1) << endl;
+    }
+    out << "GPA: " << setprecision(2) << t.calculateGPA()
+        << " Credits earned: " << setprecision(1) << t.creditsEarned();
+    return out;
+}
 
 // base class Student
 class Student
@@ -139,5 +199,11 @@ int main()
     UndergraduateStudent ama("61242027", "Ama Serwaa Mensah", {12, 8, 2024},
                              "Computer Science", 200);
     ama.printHeader();
+
+    Transcript t;
+    t += {"CS313", 1.0, 84};
+    t += {"MATH221", 1.0, 72};
+    t += {"CS341", 1.0, 47};
+    cout << t << endl;
     return 0;
 }
