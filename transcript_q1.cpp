@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <sstream>
 using namespace std;
 
 struct Date
@@ -25,15 +26,7 @@ struct GradeBand
 };
 
 const int numBands = 8;
-const GradeBand gradeBands[numBands] = {
-    {80, "A", 4.0},
-    {75, "B+", 3.5},
-    {70, "B", 3.0},
-    {65, "C+", 2.5},
-    {60, "C", 2.0},
-    {55, "D+", 1.5},
-    {50, "D", 1.0},
-    {0, "F", 0.0}};
+const GradeBand gradeBands[numBands] = {{80, "A", 4.0}, {75, "B+", 3.5}, {70, "B", 3.0}, {65, "C+", 2.5}, {60, "C", 2.0}, {55, "D+", 1.5}, {50, "D", 1.0}, {0, "F", 0.0}};
 
 GradeBand lookupGrade(int score)
 {
@@ -86,7 +79,7 @@ public:
         return count;
     }
     // Function to add a course
-    void addCourse(CourseRecord &c)
+    void addCourse(const CourseRecord &c)
     {
         if (numCourses < 10)
         {
@@ -129,27 +122,19 @@ public:
     void printTranscript() const
     {
         double gpa = calculateGPA();
-        cout << "Name: " << name << " ID: " << ID << " Admitted: "
-             << setfill('0') << setw(2) << admissionDate.day << "/"
-             << setw(2) << admissionDate.month << "/"
-             << admissionDate.year << setfill(' ') << endl;
+        cout << "Name: " << name << "   ID: " << ID << "   Admitted: " << setfill('0') << setw(2) << admissionDate.day << "/"
+             << setw(2) << admissionDate.month << "/" << admissionDate.year << setfill(' ') << endl;
         cout << left << fixed << setprecision(1);
-        cout << setw(10) << "Course" << setw(9) << "Credits"
-             << setw(7) << "Score" << setw(7) << "Grade" << "Points" << endl;
+        cout << setw(10) << "Course" << setw(9) << "Credits" << setw(7) << "Score" << setw(7) << "Grade" << "Points" << endl;
 
         for (int i = 0; i < numCourses; i++)
         {
             GradeBand g = lookupGrade(courses[i].score);
-            cout << setw(10) << courses[i].code
-                 << setw(9) << courses[i].credits
-                 << setw(7) << courses[i].score
-                 << setw(7) << g.letter
-                 << setprecision(2) << g.points << setprecision(1) << endl;
+            cout << setw(10) << courses[i].code << setw(9) << courses[i].credits << setw(7)
+                 << courses[i].score << setw(7) << g.letter << setprecision(2) << g.points << setprecision(1) << endl;
         }
-        cout << "GPA: " << setprecision(2) << gpa
-             << " Credits earned: " << setprecision(1) << creditsEarned()
-             << " Standing: " << (gpa < 2.00 ? "Academic Probation" : "Good Standing")
-             << endl;
+        cout << "GPA: " << setprecision(2) << gpa << " Credits earned: " << setprecision(1) << creditsEarned()
+             << " Standing: " << (gpa < 2.00 ? "Academic Probation" : "Good Standing") << endl;
     }
 };
 
@@ -159,7 +144,6 @@ int Student::count = 0; // Initialize number of students to 0
 int main()
 {
     string id;
-
     while (true)
     {
         getline(cin, id);
@@ -171,35 +155,29 @@ int main()
         string name;
         getline(cin, name);
 
-        string dateLine;
-        getline(cin, dateLine);
+        string date;
+        getline(cin, date);
         Date d;
-        stringstream ss(dateLine);
+        stringstream ss(date);
         ss >> d.day >> d.month >> d.year;
 
         Student s(id, name, d);
-
-        // Read courses until END, skipping invalid scores
-        string line;
-        while (getline(cin, line) && line != "END")
+        string score;
+        while (getline(cin, score) && score != "END")
         {
-            stringstream cs(line);
+            stringstream cs(score);
             CourseRecord c;
             cs >> c.code >> c.credits >> c.score;
 
             if (c.score < 0 || c.score > 100)
             {
-                cout << "Invalid score " << c.score << " for "
-                     << c.code << "; course skipped" << endl;
+                cout << "Invalid score " << c.score << " for " << c.code << "; course skipped" << endl;
                 continue;
             }
-
             s.addCourse(c);
         }
-
         s.printTranscript();
     }
-
     cout << "Students processed: " << Student::getCount() << endl;
     return 0;
 }

@@ -25,15 +25,7 @@ struct GradeBand
 };
 
 const int numBands = 8;
-const GradeBand gradeBands[numBands] = {
-    {80, "A", 4.0},
-    {75, "B+", 3.5},
-    {70, "B", 3.0},
-    {65, "C+", 2.5},
-    {60, "C", 2.0},
-    {55, "D+", 1.5},
-    {50, "D", 1.0},
-    {0, "F", 0.0}};
+const GradeBand gradeBands[numBands] = {{80, "A", 4.0}, {75, "B+", 3.5}, {70, "B", 3.0}, {65, "C+", 2.5}, {60, "C", 2.0}, {55, "D+", 1.5}, {50, "D", 1.0}, {0, "F", 0.0}};
 
 GradeBand lookupGrade(int score)
 {
@@ -46,7 +38,6 @@ GradeBand lookupGrade(int score)
     }
     return gradeBands[7];
 }
-
 // Class Transcript that stores courses
 class Transcript
 {
@@ -87,8 +78,6 @@ public:
         courses[size] = c;
         size++;
     }
-
-    // += adds a course and returns the transcript itself
     Transcript &operator+=(const CourseRecord &c)
     {
         addCourse(c);
@@ -124,8 +113,6 @@ public:
         }
         return total;
     }
-
-    // Prints only the courses for which keep() returns true
     void printWhere(bool (*keep)(const CourseRecord &)) const
     {
         cout << left << fixed << setprecision(1);
@@ -134,39 +121,29 @@ public:
             if (keep(courses[i]))
             {
                 GradeBand g = lookupGrade(courses[i].score);
-                cout << setw(10) << courses[i].code
-                     << setw(9) << courses[i].credits
-                     << setw(7) << courses[i].score
-                     << setw(7) << g.letter
-                     << setprecision(2) << g.points << setprecision(1) << endl;
+                cout << setw(10) << courses[i].code << setw(9) << courses[i].credits << setw(7) << courses[i].score
+                     << setw(7) << g.letter << setprecision(2) << g.points << setprecision(1) << endl;
             }
         }
     }
 
     friend ostream &operator<<(ostream &, const Transcript &t);
 };
-
-// Friend function: defined outside the class, no Transcript:: in front
+// Friend function
 ostream &operator<<(ostream &out, const Transcript &t)
 {
     out << left << fixed << setprecision(1);
-    out << setw(10) << "Course" << setw(9) << "Credits"
-        << setw(7) << "Score" << setw(7) << "Grade" << "Points" << endl;
+    out << setw(10) << "Course" << setw(9) << "Credits" << setw(7) << "Score" << setw(7) << "Grade" << "Points" << endl;
 
     for (int i = 0; i < t.size; i++)
     {
         GradeBand g = lookupGrade(t.courses[i].score);
-        out << setw(10) << t.courses[i].code
-            << setw(9) << t.courses[i].credits
-            << setw(7) << t.courses[i].score
-            << setw(7) << g.letter
-            << setprecision(2) << g.points << setprecision(1) << endl;
+        out << setw(10) << t.courses[i].code << setw(9) << t.courses[i].credits << setw(7)
+            << t.courses[i].score << setw(7) << g.letter << setprecision(2) << g.points << setprecision(1) << endl;
     }
-    out << "GPA: " << setprecision(2) << t.calculateGPA()
-        << " Credits earned: " << setprecision(1) << t.creditsEarned();
+    out << "GPA: " << setprecision(2) << t.calculateGPA() << " Credits earned: " << setprecision(1) << t.creditsEarned();
     return out;
 }
-
 // base class Student
 class Student
 {
@@ -177,8 +154,7 @@ protected:
     Transcript transcript;
 
 public:
-    Student(const string &ID, const string &name, const Date &admitted)
-        : ID(ID), name(name), admissionDate(admitted)
+    Student(const string &ID, const string &name, const Date &admitted) : ID(ID), name(name), admissionDate(admitted)
     {
     }
 
@@ -191,8 +167,6 @@ public:
     {
         return transcript;
     }
-
-    // Uses += and returns *this so calls can be chained
     Student &addCourse(const CourseRecord &c)
     {
         transcript += c;
@@ -207,10 +181,8 @@ public:
 
     void printHeader() const
     {
-        cout << "Name: " << name << " ID: " << ID << " Admitted: "
-             << setfill('0') << setw(2) << admissionDate.day << "/"
-             << setw(2) << admissionDate.month << "/"
-             << admissionDate.year << setfill(' ') << endl;
+        cout << "Name: " << name << "   ID: " << ID << "   Admitted: " << setfill('0') << setw(2) << admissionDate.day << "/"
+             << setw(2) << admissionDate.month << "/" << admissionDate.year << setfill(' ') << endl;
     }
 };
 
@@ -222,8 +194,7 @@ private:
     int level;
 
 public:
-    UndergraduateStudent(const string &ID, const string &name, const Date &admitted,
-                         const string &major, int level)
+    UndergraduateStudent(const string &ID, const string &name, const Date &admitted, const string &major, int level)
         : Student(ID, name, admitted), major(major), level(level)
     {
     }
@@ -232,8 +203,6 @@ public:
     {
         return level;
     }
-
-    // ++a : raise level by 100 (max 400), return the student
     UndergraduateStudent &operator++()
     {
         if (level < 400)
@@ -242,8 +211,6 @@ public:
         }
         return *this;
     }
-
-    // a++ : same, but return the old level as an int
     int operator++(int)
     {
         int old = level;
@@ -268,17 +235,11 @@ bool isFailing(const CourseRecord &c)
 
 int main()
 {
-    UndergraduateStudent ama("61242027", "Ama Serwaa Mensah", {12, 8, 2024},
-                             "Computer Science", 200);
-    UndergraduateStudent kwame("75112027", "Kwame Boateng", {14, 8, 2023},
-                               "Business Administration", 300);
+    UndergraduateStudent ama("61242027", "Ama Serwaa Mensah", {12, 8, 2024}, "Computer Science", 200);
+    UndergraduateStudent kwame("75112027", "Kwame Boateng", {14, 8, 2023}, "Business Administration", 300);
 
-    // chained addCourse calls
-    ama.addCourse({"CS313", 1.0, 84})
-        .addCourse({"MATH221", 1.0, 72})
-        .addCourse({"CS341", 1.0, 47});
-    kwame.addCourse({"ECON101", 1.0, 63})
-        .addCourse({"BUSA221", 1.0, 58});
+    ama.addCourse({"CS313", 1.0, 84}).addCourse({"MATH221", 1.0, 72}).addCourse({"CS341", 1.0, 47});
+    kwame.addCourse({"ECON101", 1.0, 63}).addCourse({"BUSA221", 1.0, 58});
 
     ama.printHeader();
     cout << ama.getTranscript() << endl;
